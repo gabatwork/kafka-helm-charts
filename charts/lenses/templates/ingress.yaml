@@ -17,21 +17,25 @@ metadata:
   {{- end }}
 spec:
   rules:
-  - host: {{ .Values.ingress.host }}
+  {{- range .Values.ingress.hosts }}
+  - host: {{ . }}
     http:
       paths:
-      - path: {{if .Values.ingress.path }}{{ .Values.ingress.path }}{{else}}"/"{{end}}
+      - path: {{if $.Values.ingress.path }}{{ $.Values.ingress.path }}{{else}}"/"{{end}}
         backend:
-          serviceName: {{ include "fullname" . | quote }}
-          servicePort: {{ .Values.servicePort }}
+          serviceName: {{ include "fullname" $ | quote }}
+          servicePort: {{ $.Values.servicePort }}
+  {{- end}}
   {{- if .Values.ingress.tls.enabled }}
   tls:
+    {{ . }}
     - hosts:
-      - {{ .Values.ingress.host }}
-      {{- if .Values.ingress.tls.secretName }}
-      secretName: {{ .Values.ingress.tls.secretName }}
+      - {{ $.Values.ingress.hosts }}
+      {{- if $.Values.ingress.tls.secretName }}
+      secretName: {{ $.Values.ingress.tls.secretName }}
       {{- else }}
-      secretName: {{ include "fullname" . | quote }}    
-      {{- end }}
+      secretName: {{ include "fullname" $ | quote }}    
+    {{- end }}
+    {{- end }}
   {{- end -}}
 {{- end -}}        

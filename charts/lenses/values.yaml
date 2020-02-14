@@ -79,7 +79,7 @@ ingress:
   ## If true, Ingress will be created
   ##
   enabled: false
-  host:
+  hosts:
 
   # Ingress annotations
   annotations:
