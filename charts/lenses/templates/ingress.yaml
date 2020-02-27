@@ -17,25 +17,31 @@ metadata:
   {{- end }}
 spec:
   rules:
-  {{- range .Values.ingress.hosts }}
-  - host: {{ . }}
-    http:
-      paths:
-      - path: {{if $.Values.ingress.path }}{{ $.Values.ingress.path }}{{else}}"/"{{end}}
-        backend:
-          serviceName: {{ include "fullname" $ | quote }}
-          servicePort: {{ $.Values.servicePort }}
+    - host: {{ .Values.ingress.host }}
+        http:
+          paths:
+          - path: {{if .Values.ingress.path }}{{ .Values.ingress.path }}{{else}}"/"{{end}}
+            backend:
+              serviceName: {{ include "fullname" . | quote }}
+              servicePort: {{ .Values.servicePort }}
+  {{- range .Values.ingress.additionalHosts }}
+    - host: {{ . }}
+        http:
+          paths:
+          - path: {{if $.Values.ingress.path }}{{ $.Values.ingress.path }}{{else}}"/"{{end}}
+            backend:
+              serviceName: {{ include "fullname" $ | quote }}
+              servicePort: {{ $.Values.servicePort }}
   {{- end}}
+
   {{- if .Values.ingress.tls.enabled }}
   tls:
-    {{ . }}
     - hosts:
-      - {{ $.Values.ingress.hosts }}
-      {{- if $.Values.ingress.tls.secretName }}
-      secretName: {{ $.Values.ingress.tls.secretName }}
+      - {{ .Values.ingress.host }}
+      {{- if .Values.ingress.tls.secretName }}
+      secretName: {{ .Values.ingress.tls.secretName }}
       {{- else }}
-      secretName: {{ include "fullname" $ | quote }}    
-    {{- end }}
-    {{- end }}
+      secretName: {{ include "fullname" . | quote }}    
+      {{- end }}
   {{- end -}}
 {{- end -}}        
